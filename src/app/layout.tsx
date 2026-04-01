@@ -13,6 +13,9 @@ export const metadata: Metadata = {
   description:
     "中小企業向けAI社員サービス。ゲーム感覚で家来を採用し、事務・営業・経理をAIが代行。月額0円から。",
   keywords: "AI社員, AI自動化, 中小企業, 業務効率化, AI代行",
+  verification: {
+    google: "8nDBohHIHF7czzQOLk0hZ1Be3hMEr0qa9fRra3QcC60",
+  },
   openGraph: {
     title: "AI社員ケライ | 休まない。辞めない。文句言わない。",
     description:
