@@ -1,12 +1,16 @@
-import type { Metadata } from "next";
-import Link from "next/link";
+"use client";
 
-export const metadata: Metadata = {
-  title: "アカウント作成 | AI社員ケライ",
-  description: "AI社員ケライに無料登録。最短2分で最初の家来を採用できます。",
-};
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function SignupPage() {
+  const router = useRouter();
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    router.push("/home");
+  }
+
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-gradient-to-b from-gray-50 to-white flex items-center justify-center px-4 py-16">
       <div className="w-full max-w-md">
@@ -22,7 +26,7 @@ export default function SignupPage() {
           <h2 className="text-xl font-bold text-gray-900 mb-2">無料アカウント作成</h2>
           <p className="text-sm text-gray-500 mb-6">クレジットカード不要・月額0円から</p>
 
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
               <label
                 htmlFor="name"
