@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import GoogleSignInButton from "@/components/GoogleSignInButton";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -25,6 +26,15 @@ export default function SignupPage() {
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
           <h2 className="text-xl font-bold text-gray-900 mb-2">無料アカウント作成</h2>
           <p className="text-sm text-gray-500 mb-6">クレジットカード不要・月額0円から</p>
+
+          {/* Google Sign In */}
+          <GoogleSignInButton label="Googleで登録" />
+
+          <div className="flex items-center gap-3 my-5">
+            <div className="flex-1 h-px bg-gray-200" />
+            <span className="text-xs text-gray-400">または</span>
+            <div className="flex-1 h-px bg-gray-200" />
+          </div>
 
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>

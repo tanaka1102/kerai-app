@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import GoogleSignInButton from "@/components/GoogleSignInButton";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,6 +25,15 @@ export default function LoginPage() {
         {/* Card */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
           <h2 className="text-xl font-bold text-gray-900 mb-6">ログイン</h2>
+
+          {/* Google Sign In */}
+          <GoogleSignInButton label="Googleでログイン" />
+
+          <div className="flex items-center gap-3 my-5">
+            <div className="flex-1 h-px bg-gray-200" />
+            <span className="text-xs text-gray-400">または</span>
+            <div className="flex-1 h-px bg-gray-200" />
+          </div>
 
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
