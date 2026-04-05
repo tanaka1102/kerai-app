@@ -1,24 +1,54 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import GoogleSignInButton from "@/components/GoogleSignInButton";
 
 export default function SignupForm() {
   const router = useRouter();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setError("");
+
     const form = e.currentTarget;
     const name = (form.elements.namedItem("name") as HTMLInputElement).value.trim();
     const email = (form.elements.namedItem("email") as HTMLInputElement).value.trim();
     const password = (form.elements.namedItem("password") as HTMLInputElement).value;
     const terms = (form.elements.namedItem("terms") as HTMLInputElement).checked;
 
-    if (!name || !email || !password || !terms) return;
-    if (password.length < 8) return;
-    // TODO: サーバーサイド登録処理に置き換える
-    router.push("/home");
+    if (!name || !email || !password || !terms) {
+      setError("全ての必須項目を入力し、利用規約に同意してください");
+      return;
+    }
+    if (password.length < 8) {
+      setError("パスワードは8文字以上で入力してください");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error ?? "エラーが発生しました");
+        return;
+      }
+
+      router.push("/verify-email");
+    } catch {
+      setError("通信エラーが発生しました。しばらくしてから再試行してください");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -44,6 +74,12 @@ export default function SignupForm() {
             <span className="text-xs text-gray-400">または</span>
             <div className="flex-1 h-px bg-gray-200" />
           </div>
+
+          {error && (
+            <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-100 text-sm text-red-600">
+              {error}
+            </div>
+          )}
 
           <form className="space-y-4" onSubmit={handleSubmit} noValidate>
             <div>
@@ -135,10 +171,11 @@ export default function SignupForm() {
 
             <button
               type="submit"
-              className="w-full py-3 rounded-xl text-white font-bold text-sm transition-all hover:opacity-90"
+              disabled={loading}
+              className="w-full py-3 rounded-xl text-white font-bold text-sm transition-all hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed"
               style={{ background: "linear-gradient(135deg, #00D4FF, #0088FF)" }}
             >
-              家来を採用する ⚔️
+              {loading ? "送信中..." : "家来を採用する ⚔️"}
             </button>
           </form>
 

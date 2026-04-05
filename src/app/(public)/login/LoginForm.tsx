@@ -1,21 +1,66 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import GoogleSignInButton from "@/components/GoogleSignInButton";
 
 export default function LoginForm() {
-  const router = useRouter();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setError("");
+
     const form = e.currentTarget;
     const email = (form.elements.namedItem("email") as HTMLInputElement).value.trim();
     const password = (form.elements.namedItem("password") as HTMLInputElement).value;
 
-    if (!email || !password) return;
-    // TODO: サーバーサイド認証処理に置き換える
-    router.push("/home");
+    if (!email || !password) {
+      setError("メールアドレスとパスワードを入力してください");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // rate limitチェック（サーバーサイド）
+      const checkRes = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (checkRes.status === 429) {
+        const data = await checkRes.json();
+        setError(data.error ?? "ログイン試行回数が多すぎます。しばらくしてから再試行してください");
+        return;
+      }
+
+      if (!checkRes.ok) {
+        const data = await checkRes.json();
+        setError(data.error ?? "ログインに失敗しました");
+        return;
+      }
+
+      // NextAuth credentials sign in
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError("メールアドレスまたはパスワードが正しくありません");
+        return;
+      }
+
+      window.location.href = "/home";
+    } catch {
+      setError("通信エラーが発生しました。しばらくしてから再試行してください");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -40,6 +85,12 @@ export default function LoginForm() {
             <span className="text-xs text-gray-400">または</span>
             <div className="flex-1 h-px bg-gray-200" />
           </div>
+
+          {error && (
+            <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-100 text-sm text-red-600">
+              {error}
+            </div>
+          )}
 
           <form className="space-y-4" onSubmit={handleSubmit} noValidate>
             <div>
@@ -88,10 +139,11 @@ export default function LoginForm() {
 
             <button
               type="submit"
-              className="w-full py-3 rounded-xl text-white font-bold text-sm transition-all hover:opacity-90"
+              disabled={loading}
+              className="w-full py-3 rounded-xl text-white font-bold text-sm transition-all hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed"
               style={{ background: "linear-gradient(135deg, #00D4FF, #0088FF)" }}
             >
-              入城する 🏯
+              {loading ? "確認中..." : "入城する 🏯"}
             </button>
           </form>
 
