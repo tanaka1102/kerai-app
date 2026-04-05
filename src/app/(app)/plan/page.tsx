@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "プラン・課金 | AI社員ケライ",
+  title: "プラン・課金",
   description: "AI社員ケライの料金プランと小判購入ページです。",
+  robots: { index: false, follow: false },
 };
 
 const plans = [

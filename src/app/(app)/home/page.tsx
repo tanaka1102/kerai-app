@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "城下町 | AI社員ケライ",
+  title: "城下町",
   description: "あなたの城下町。家来たちの活躍で城が発展します。",
+  robots: { index: false, follow: false },
 };
 
 const myKerai = [

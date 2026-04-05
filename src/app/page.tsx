@@ -6,7 +6,17 @@ import PublicFooter from "@/components/PublicFooter";
 export const metadata: Metadata = {
   title: "AI社員ケライ | 休まない。辞めない。文句言わない。",
   description:
-    "中小企業向けAI社員サービス。ゲーム感覚で家来を採用し、事務・営業・経理をAIが代行。月額0円から。",
+    "中小企業向けAI社員サービス。ゲーム感覚で家来を採用し、事務・営業・経理をAIが代行。最短2分で採用開始。月額0円から始められます。",
+  alternates: {
+    canonical: "https://kerai-app.vercel.app",
+  },
+  openGraph: {
+    title: "AI社員ケライ | 休まない。辞めない。文句言わない。",
+    description:
+      "中小企業向けAI社員サービス。ゲーム感覚で家来を採用し、事務・営業・経理をAIが代行。最短2分で採用開始。月額0円から始められます。",
+    url: "https://kerai-app.vercel.app",
+    type: "website",
+  },
 };
 
 const features = [
@@ -81,9 +91,54 @@ const plans = [
   },
 ];
 
+const lpJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "AI社員ケライ | 休まない。辞めない。文句言わない。",
+  description:
+    "中小企業向けAI社員サービス。ゲーム感覚で家来を採用し、事務・営業・経理をAIが代行。最短2分で採用開始。月額0円から始められます。",
+  url: "https://kerai-app.vercel.app",
+  mainEntity: {
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "AI社員ケライとは何ですか？",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "中小企業向けのAI社員サービスです。ゲーム感覚で家来（AIエージェント）を採用し、事務・営業・経理業務をAIが代行します。",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "料金はいくらですか？",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "月額0円の無料プランから利用できます。有料プランはスターター2,980円、スタンダード9,800円、グロース29,800円をご用意しています。",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "すぐに使い始められますか？",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "はい、最短2分でアカウント作成・家来採用が完了します。クレジットカード不要で無料登録できます。",
+        },
+      },
+    ],
+  },
+};
+
 export default function HomePage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(lpJsonLd) }}
+      />
       <PublicHeader />
       <main className="pt-16">
         {/* Hero Section */}

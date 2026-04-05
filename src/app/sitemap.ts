@@ -1,24 +1,18 @@
 import type { MetadataRoute } from "next";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://kerai-app.vercel.app";
+const BASE_URL = "https://kerai-app.vercel.app";
 
+export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
-      url: baseUrl,
-      lastModified: new Date(),
+      url: BASE_URL,
+      lastModified: new Date("2025-04-02"),
       changeFrequency: "weekly",
       priority: 1,
     },
     {
-      url: `${baseUrl}/login`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.5,
-    },
-    {
-      url: `${baseUrl}/signup`,
-      lastModified: new Date(),
+      url: `${BASE_URL}/signup`,
+      lastModified: new Date("2025-04-02"),
       changeFrequency: "monthly",
       priority: 0.8,
     },
