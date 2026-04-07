@@ -20,6 +20,12 @@ export default function PublicHeader() {
             機能
           </Link>
           <Link
+            href="/#kerai"
+            className="text-sm text-gray-600 hover:text-gray-900 hidden md:block"
+          >
+            家来
+          </Link>
+          <Link
             href="/plan"
             className="text-sm text-gray-600 hover:text-gray-900 hidden md:block"
           >
