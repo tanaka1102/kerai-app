@@ -34,7 +34,7 @@ export default function PublicFooter() {
             <h4 className="text-white font-medium mb-3 text-sm">法的情報</h4>
             <ul className="space-y-2 text-sm">
               <li><a href="#" className="hover:text-white transition-colors">利用規約</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">プライバシーポリシー</a></li>
+              <li><Link href="/privacy" className="hover:text-white transition-colors">プライバシーポリシー</Link></li>
               <li><a href="#" className="hover:text-white transition-colors">特定商取引法</a></li>
             </ul>
           </div>

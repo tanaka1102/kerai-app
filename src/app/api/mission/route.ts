@@ -1,11 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { addCoins, addMission } from "@/lib/db";
+import { isValidOrigin } from "@/lib/csrf";
 import { randomUUID } from "crypto";
 
 // 事務（ブン子）タスクテンプレートエンジン
 // フェーズ2 MVP: テンプレートベースの処理
 // フェーズ3で実際のAI API（Claude/OpenAI）に差し替え予定
+
+const VALID_TASK_TYPES = new Set([
+  "請求書・書類作成",
+  "メール文作成",
+  "議事録・まとめ",
+  "スケジュール調整",
+  "データ整理・リスト作成",
+]);
+
+const VALID_KERAI_ROLES = new Set(["事務", "営業", "企画", "技術", "接客", "管理"]);
+
+// 最大文字数制限（XSS/DoS対策）
+const MAX_DETAIL_LENGTH = 2000;
+const MAX_NAME_LENGTH = 50;
 
 type MissionRequest = {
   keraiName: string;
@@ -153,16 +168,37 @@ ${trimmed || "（内容が未入力です）"}
 }
 
 export async function POST(req: NextRequest) {
+  // CSRF チェック（同一オリジンからのリクエストか確認）
+  if (!isValidOrigin(req)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   const session = await auth();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const body: MissionRequest = await req.json();
+  let body: MissionRequest;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "リクエストが不正です" }, { status: 400 });
+  }
+
   const { keraiName, keraiRole, taskType, detail } = body;
 
-  if (!taskType || taskType.trim() === "") {
-    return NextResponse.json({ error: "taskType is required" }, { status: 400 });
+  // 入力バリデーション（XSS/injection対策）
+  if (!taskType || typeof taskType !== "string" || !VALID_TASK_TYPES.has(taskType)) {
+    return NextResponse.json({ error: "taskType が無効です" }, { status: 400 });
+  }
+  if (keraiRole && (typeof keraiRole !== "string" || !VALID_KERAI_ROLES.has(keraiRole))) {
+    return NextResponse.json({ error: "keraiRole が無効です" }, { status: 400 });
+  }
+  if (keraiName && (typeof keraiName !== "string" || keraiName.length > MAX_NAME_LENGTH)) {
+    return NextResponse.json({ error: "keraiName が長すぎます" }, { status: 400 });
+  }
+  if (detail && (typeof detail !== "string" || detail.length > MAX_DETAIL_LENGTH)) {
+    return NextResponse.json({ error: `詳細は${MAX_DETAIL_LENGTH}文字以内で入力してください` }, { status: 400 });
   }
 
   // MVP: 事務（ブン子）のみ実装
