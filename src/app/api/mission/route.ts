@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { addCoins, addMission } from "@/lib/db";
+import { randomUUID } from "crypto";
 
 // 事務（ブン子）タスクテンプレートエンジン
 // フェーズ2 MVP: テンプレートベースの処理
@@ -174,12 +176,31 @@ export async function POST(req: NextRequest) {
 
   // 小判報酬計算（タスク種別で変動）
   const coinReward = taskType === "データ整理・リスト作成" ? 80 : 50;
+  const completedAt = new Date().toISOString();
+  const userId = (session.user as { id?: string }).id ?? session.user?.email ?? "anonymous";
+
+  // DB永続化（Redis）
+  try {
+    await Promise.all([
+      addCoins(userId, coinReward),
+      addMission(userId, {
+        id: randomUUID(),
+        keraiName,
+        keraiRole,
+        taskType,
+        completedAt,
+        coinReward,
+      }),
+    ]);
+  } catch {
+    // Redis障害時もレスポンスは返す（サービス継続優先）
+  }
 
   return NextResponse.json({
     result,
     coinReward,
     keraiName,
     taskType,
-    completedAt: new Date().toISOString(),
+    completedAt,
   });
 }

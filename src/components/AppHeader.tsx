@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 
 const navItems = [
   { href: "/home", label: "城下町", icon: "🏯" },
@@ -15,6 +16,14 @@ const navItems = [
 
 export default function AppHeader() {
   const pathname = usePathname();
+  const [coins, setCoins] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetch("/api/user")
+      .then((r) => r.json())
+      .then((d) => setCoins(d.coins ?? null))
+      .catch(() => {});
+  }, [pathname]); // ページ遷移のたびに更新
 
   return (
     <>
@@ -52,7 +61,9 @@ export default function AppHeader() {
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-yellow-50 border border-yellow-200">
               <span className="text-lg">🪙</span>
-              <span className="text-sm font-bold text-yellow-700">1,200</span>
+              <span className="text-sm font-bold text-yellow-700">
+                {coins !== null ? coins.toLocaleString() : "…"}
+              </span>
               <span className="text-xs text-yellow-500">小判</span>
             </div>
             <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-sm">
