@@ -1,16 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 
-const kerai = [
-  { name: "事務のさくら", role: "事務", icon: "🌸" },
-  { name: "営業の武蔵", role: "営業", icon: "⚔️" },
-  { name: "経理のそろばん斎", role: "経理", icon: "🧮" },
+const ownedKerai = [
+  { name: "コスケ", role: "営業", imgPath: "/characters/営業/コスケ_ノーマル.png" },
+  { name: "ブン子", role: "事務", imgPath: "/characters/事務/ブン子_ノーマル.png" },
+  { name: "ソロ丸", role: "経理", imgPath: "/characters/経理/ソロ丸_ノーマル.png" },
 ];
 
 export default function MissionPage() {
   const [tab, setTab] = useState<"chat" | "form">("chat");
   const [message, setMessage] = useState("");
+  const [selectedKerai, setSelectedKerai] = useState(ownedKerai[0]);
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -37,17 +39,46 @@ export default function MissionPage() {
 
       {tab === "chat" ? (
         <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+          {/* Kerai selector */}
+          <div className="px-4 pt-4 pb-3 border-b border-gray-100 flex gap-2 overflow-x-auto">
+            {ownedKerai.map((k) => (
+              <button
+                key={k.name}
+                onClick={() => setSelectedKerai(k)}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all flex-shrink-0 text-sm font-medium ${
+                  selectedKerai.name === k.name
+                    ? "border-cyan-400 bg-cyan-50 text-cyan-700"
+                    : "border-gray-200 text-gray-600 hover:border-gray-300"
+                }`}
+              >
+                <div className="relative w-6 h-6 rounded-full overflow-hidden bg-gray-100">
+                  <Image src={k.imgPath} alt={k.name} fill className="object-contain" sizes="24px" />
+                </div>
+                <span>{k.name}</span>
+                <span className="text-xs text-gray-400">({k.role})</span>
+              </button>
+            ))}
+          </div>
+
           {/* Chat messages */}
-          <div className="h-96 p-6 space-y-4 overflow-y-auto">
+          <div className="h-80 p-6 space-y-4 overflow-y-auto">
             <div className="flex gap-3">
-              <div className="w-8 h-8 rounded-full bg-cyan-100 flex items-center justify-center text-sm flex-shrink-0">
-                🌸
+              <div className="relative w-9 h-9 rounded-full overflow-hidden bg-cyan-50 flex-shrink-0">
+                <Image
+                  src={selectedKerai.imgPath}
+                  alt={selectedKerai.name}
+                  fill
+                  className="object-contain p-0.5"
+                  sizes="36px"
+                />
               </div>
               <div className="bg-gray-50 rounded-2xl rounded-tl-none px-4 py-3 max-w-xs">
+                <p className="text-xs text-gray-400 mb-1 font-medium">{selectedKerai.name}（{selectedKerai.role}）</p>
                 <p className="text-sm text-gray-700">お任せください、殿。どのような任務でしょうか？</p>
               </div>
             </div>
           </div>
+
           {/* Input */}
           <div className="border-t border-gray-100 p-4 flex gap-3">
             <input
@@ -68,12 +99,28 @@ export default function MissionPage() {
       ) : (
         <div className="bg-white rounded-2xl border border-gray-100 p-6 space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">担当家来</label>
-            <select className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none">
-              {kerai.map((k) => (
-                <option key={k.name}>{k.icon} {k.name}（{k.role}）</option>
+            <label className="block text-sm font-medium text-gray-700 mb-2">担当家来を選ぶ</label>
+            <div className="grid grid-cols-3 gap-3">
+              {ownedKerai.map((k) => (
+                <button
+                  key={k.name}
+                  onClick={() => setSelectedKerai(k)}
+                  className={`flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all ${
+                    selectedKerai.name === k.name
+                      ? "border-cyan-400 bg-cyan-50"
+                      : "border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-gray-50">
+                    <Image src={k.imgPath} alt={k.name} fill className="object-contain p-1" sizes="56px" />
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xs font-bold text-gray-900">{k.name}</div>
+                    <div className="text-xs text-gray-400">{k.role}</div>
+                  </div>
+                </button>
               ))}
-            </select>
+            </div>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">任務の種類</label>
@@ -97,7 +144,7 @@ export default function MissionPage() {
             className="w-full py-3 rounded-xl text-white font-bold text-sm"
             style={{ background: "linear-gradient(135deg, #00D4FF, #0088FF)" }}
           >
-            任務を依頼する 📜
+            {selectedKerai.name}に任務を依頼する 📜
           </button>
         </div>
       )}

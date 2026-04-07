@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
+import FirstTimeModal from "./FirstTimeModal";
 
 export const metadata: Metadata = {
   title: "城下町",
@@ -8,14 +10,15 @@ export const metadata: Metadata = {
 };
 
 const myKerai = [
-  { name: "事務のさくら", role: "事務", level: 12, icon: "🌸", status: "待機中" },
-  { name: "営業の武蔵", role: "営業", level: 8, icon: "⚔️", status: "任務中" },
-  { name: "経理のそろばん斎", role: "経理", level: 5, icon: "🧮", status: "待機中" },
+  { name: "コスケ", role: "営業", level: 8, imgPath: "/characters/営業/コスケ_ノーマル.png", status: "任務中" },
+  { name: "ブン子", role: "事務", level: 12, imgPath: "/characters/事務/ブン子_ノーマル.png", status: "待機中" },
+  { name: "ソロ丸", role: "経理", level: 5, imgPath: "/characters/経理/ソロ丸_ノーマル.png", status: "待機中" },
 ];
 
 export default function HomePage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
+      <FirstTimeModal />
       {/* Welcome Banner */}
       <div
         className="rounded-2xl p-6 md:p-8 text-white mb-8"
@@ -90,7 +93,15 @@ export default function HomePage() {
             <div className="divide-y divide-gray-50">
               {myKerai.map((k) => (
                 <div key={k.name} className="flex items-center gap-3 px-4 py-3">
-                  <div className="text-2xl">{k.icon}</div>
+                  <div className="relative w-9 h-9 rounded-xl overflow-hidden bg-gray-50 flex-shrink-0">
+                    <Image
+                      src={k.imgPath}
+                      alt={k.name}
+                      fill
+                      className="object-contain p-0.5"
+                      sizes="36px"
+                    />
+                  </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-gray-900 truncate">{k.name}</div>
                     <div className="text-xs text-gray-400">

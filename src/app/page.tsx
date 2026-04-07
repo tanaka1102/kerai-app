@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
 
@@ -52,6 +53,70 @@ const features = [
   },
 ];
 
+// 属性別代表キャラ（LPショーケース用）
+const keraiShowcase = [
+  {
+    role: "営業",
+    label: "営業番",
+    name: "コスケ",
+    imgPath: "/characters/営業/コスケ_ノーマル.png",
+    rarity: "SR",
+    rarityColor: "#9333EA",
+    tasks: ["営業メール自動作成", "見積書の下書き", "商談後フォロー"],
+    color: "#EF4444",
+  },
+  {
+    role: "事務",
+    label: "文書番",
+    name: "ブン子",
+    imgPath: "/characters/事務/ブン子_ノーマル.png",
+    rarity: "R",
+    rarityColor: "#00D4FF",
+    tasks: ["請求書・納品書作成", "議事録の文字起こし", "スケジュール調整"],
+    color: "#00D4FF",
+  },
+  {
+    role: "経理",
+    label: "算盤番",
+    name: "ソロ丸",
+    imgPath: "/characters/経理/ソロ丸_ノーマル.png",
+    rarity: "R",
+    rarityColor: "#00D4FF",
+    tasks: ["売上レポート自動作成", "経費精算の入力代行", "未入金リマインド"],
+    color: "#10B981",
+  },
+  {
+    role: "SNS/マーケ",
+    label: "発信番",
+    name: "ドンドン",
+    imgPath: "/characters/SNS_マーケ/ドンドン_ノーマル.png",
+    rarity: "SR",
+    rarityColor: "#9333EA",
+    tasks: ["SNS投稿文自動作成", "ハッシュタグ最適化", "メルマガ作成"],
+    color: "#F59E0B",
+  },
+  {
+    role: "サポート",
+    label: "応対番",
+    name: "オチャ丸",
+    imgPath: "/characters/サポート/オチャ丸_ノーマル.png",
+    rarity: "R",
+    rarityColor: "#00D4FF",
+    tasks: ["24時間問い合わせ対応", "FAQ自動回答", "顧客満足度分析"],
+    color: "#8B5CF6",
+  },
+  {
+    role: "Web制作",
+    label: "造作番",
+    name: "設計カラス",
+    imgPath: "/characters/Web制作/設計カラス_ノーマル.png",
+    rarity: "SSR",
+    rarityColor: "#FF4500",
+    tasks: ["LP・HP制作", "SEO対策", "Googleフォーム設置"],
+    color: "#6366F1",
+  },
+];
+
 const plans = [
   {
     name: "無料",
@@ -64,29 +129,29 @@ const plans = [
   },
   {
     name: "スターター",
-    price: "¥2,980",
+    price: "¥9,800",
     period: "/月",
     color: "#00D4FF",
     highlight: false,
-    features: ["家来3体", "月100件まで", "全機能利用可"],
+    features: ["家来3体", "月100件まで", "全機能利用可", "メールサポート"],
     cta: "始める",
   },
   {
     name: "スタンダード",
-    price: "¥9,800",
+    price: "¥29,800",
     period: "/月",
     color: "#0088FF",
     highlight: true,
-    features: ["家来10体", "月500件まで", "優先サポート", "分析ダッシュボード"],
+    features: ["家来10体", "月500件まで", "優先サポート", "分析ダッシュボード", "ガチャボーナス×2"],
     cta: "最も人気",
   },
   {
     name: "グロース",
-    price: "¥29,800",
+    price: "¥49,800",
     period: "/月",
     color: "#7C3AED",
     highlight: false,
-    features: ["家来無制限", "件数無制限", "専任サポート", "カスタム設定"],
+    features: ["家来無制限", "件数無制限", "専任サポート", "カスタム設定", "API連携", "ガチャボーナス×5"],
     cta: "問い合わせ",
   },
 ];
@@ -203,6 +268,129 @@ export default function HomePage() {
                 <div className="text-sm text-gray-500 mt-1">{stat.label}</div>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* Kerai Showcase Section */}
+        <section id="kerai" className="py-20 bg-gray-900 text-white overflow-hidden">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="text-center mb-12">
+              <div
+                className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm mb-4"
+                style={{ background: "rgba(0,212,255,0.15)", color: "#00D4FF" }}
+              >
+                ⚔️ 全18体のAI家来
+              </div>
+              <h2 className="text-3xl md:text-4xl font-black mb-4">
+                あなたの城に仕える家来たち
+              </h2>
+              <p className="text-gray-400 max-w-xl mx-auto">
+                6つの専門職種、各3体。レア度はN〜SSRまで。<br />
+                ガチャを回して仲間を増やし、城下町を発展させよ。
+              </p>
+            </div>
+
+            {/* Rarity badges */}
+            <div className="flex justify-center gap-3 mb-10 flex-wrap">
+              {[
+                { label: "N", color: "#6B7280", desc: "ノーマル" },
+                { label: "R", color: "#00D4FF", desc: "レア" },
+                { label: "SR", color: "#9333EA", desc: "激レア" },
+                { label: "SSR", color: "#FF4500", desc: "伝説" },
+              ].map((r) => (
+                <div
+                  key={r.label}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm font-bold"
+                  style={{ borderColor: r.color + "60", color: r.color, background: r.color + "12" }}
+                >
+                  <span>{r.label}</span>
+                  <span className="text-xs font-normal opacity-70">{r.desc}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Kerai cards */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-12">
+              {keraiShowcase.map((k) => (
+                <div
+                  key={k.name}
+                  className="rounded-2xl border overflow-hidden transition-all hover:scale-105 hover:shadow-xl"
+                  style={{ borderColor: k.rarityColor + "50", background: "rgba(255,255,255,0.04)" }}
+                >
+                  {/* Rarity badge */}
+                  <div
+                    className="text-xs font-black text-center py-1"
+                    style={{ background: k.rarityColor + "30", color: k.rarityColor }}
+                  >
+                    {k.rarity}
+                  </div>
+                  {/* Character image */}
+                  <div
+                    className="relative aspect-square p-3"
+                    style={{ background: k.color + "10" }}
+                  >
+                    <Image
+                      src={k.imgPath}
+                      alt={k.name}
+                      fill
+                      className="object-contain p-3"
+                      sizes="(max-width: 768px) 50vw, 16vw"
+                    />
+                  </div>
+                  {/* Info */}
+                  <div className="p-3">
+                    <div className="text-xs font-black text-white mb-0.5">{k.name}</div>
+                    <div
+                      className="text-xs font-bold mb-2"
+                      style={{ color: k.color }}
+                    >
+                      {k.label}
+                    </div>
+                    <ul className="space-y-0.5">
+                      {k.tasks.map((t) => (
+                        <li key={t} className="text-xs text-gray-400 flex items-start gap-1">
+                          <span style={{ color: k.color }} className="mt-0.5 flex-shrink-0">✓</span>
+                          <span>{t}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Gamification highlight */}
+            <div
+              className="rounded-2xl p-6 md:p-8 border"
+              style={{ borderColor: "rgba(0,212,255,0.2)", background: "rgba(0,212,255,0.05)" }}
+            >
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                <div>
+                  <div className="text-4xl mb-3">🪙</div>
+                  <h3 className="font-black text-white mb-1">小判システム</h3>
+                  <p className="text-sm text-gray-400">
+                    任務完了のたびに小判を獲得。<br />
+                    ガチャを回して家来やアイテムをゲット。
+                  </p>
+                </div>
+                <div>
+                  <div className="text-4xl mb-3">🎲</div>
+                  <h3 className="font-black text-white mb-1">ガチャで収集</h3>
+                  <p className="text-sm text-gray-400">
+                    スキンガチャ・装飾ガチャの2種類。<br />
+                    SSRの出現率3%——引けるか！？
+                  </p>
+                </div>
+                <div>
+                  <div className="text-4xl mb-3">🏯</div>
+                  <h3 className="font-black text-white mb-1">城下町が育つ</h3>
+                  <p className="text-sm text-gray-400">
+                    業務実績が積まれるほど城が発展。<br />
+                    仕事の成果が目に見えて楽しくなる。
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 

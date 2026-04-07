@@ -1,20 +1,36 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 
-const tabs = ["全て", "営業", "事務", "経理", "SNS", "サポート", "Web制作"] as const;
+const tabs = ["全て", "営業", "事務", "経理", "SNS/マーケ", "サポート", "Web制作"] as const;
 type Tab = typeof tabs[number];
 
 const kerai = [
-  { name: "武蔵", role: "営業", level: 8, icon: "⚔️", rarity: "SR", owned: true },
-  { name: "さくら", role: "事務", level: 12, icon: "🌸", rarity: "R", owned: true },
-  { name: "そろばん斎", role: "経理", level: 5, icon: "🧮", rarity: "R", owned: true },
-  { name: "つぶやき姫", role: "SNS", level: 0, icon: "🎴", rarity: "SR", owned: false },
-  { name: "おもてなし太郎", role: "サポート", level: 0, icon: "🍵", rarity: "R", owned: false },
-  { name: "絵師の卜伝", role: "Web制作", level: 0, icon: "🖌️", rarity: "SSR", owned: false },
-  { name: "虎之助", role: "営業", level: 0, icon: "🐯", rarity: "N", owned: false },
-  { name: "算盤次郎", role: "経理", level: 0, icon: "📊", rarity: "N", owned: false },
-  { name: "文書の蛍", role: "事務", level: 0, icon: "💡", rarity: "N", owned: false },
+  // 営業
+  { name: "コスケ", role: "営業", level: 8, imgPath: "/characters/営業/コスケ_ノーマル.png", rarity: "SR", owned: true },
+  { name: "タヌ吉", role: "営業", level: 0, imgPath: "/characters/営業/タヌ吉_ノーマル.png", rarity: "R", owned: false },
+  { name: "フクじい", role: "営業", level: 0, imgPath: "/characters/営業/フクじい_ノーマル.png", rarity: "N", owned: false },
+  // 事務
+  { name: "ブン子", role: "事務", level: 12, imgPath: "/characters/事務/ブン子_ノーマル.png", rarity: "R", owned: true },
+  { name: "ネコ判", role: "事務", level: 0, imgPath: "/characters/事務/ネコ判_ノーマル.png", rarity: "SR", owned: false },
+  { name: "カエル書記", role: "事務", level: 0, imgPath: "/characters/事務/カエル書記_ノーマル.png", rarity: "N", owned: false },
+  // 経理
+  { name: "ソロ丸", role: "経理", level: 5, imgPath: "/characters/経理/ソロ丸_ノーマル.png", rarity: "R", owned: true },
+  { name: "コダヌキ金兵衛", role: "経理", level: 0, imgPath: "/characters/経理/コダヌキ金兵衛_ノーマル.png", rarity: "SR", owned: false },
+  { name: "帳ロボ", role: "経理", level: 0, imgPath: "/characters/経理/帳ロボ_ノーマル.png", rarity: "N", owned: false },
+  // SNS/マーケ
+  { name: "ドンドン", role: "SNS/マーケ", level: 0, imgPath: "/characters/SNS_マーケ/ドンドン_ノーマル.png", rarity: "R", owned: false },
+  { name: "のぼり犬", role: "SNS/マーケ", level: 0, imgPath: "/characters/SNS_マーケ/のぼり犬_ノーマル.png", rarity: "SR", owned: false },
+  { name: "旗振りカッパ", role: "SNS/マーケ", level: 0, imgPath: "/characters/SNS_マーケ/旗振りカッパ_ノーマル.png", rarity: "N", owned: false },
+  // サポート
+  { name: "オチャ丸", role: "サポート", level: 0, imgPath: "/characters/サポート/オチャ丸_ノーマル.png", rarity: "R", owned: false },
+  { name: "クスリ猫", role: "サポート", level: 0, imgPath: "/characters/サポート/クスリ猫_ノーマル.png", rarity: "SR", owned: false },
+  { name: "ヌイグルミ兵", role: "サポート", level: 0, imgPath: "/characters/サポート/ヌイグルミ兵_ノーマル.png", rarity: "N", owned: false },
+  // Web制作
+  { name: "トン太", role: "Web制作", level: 0, imgPath: "/characters/Web制作/トン太_ノーマル.png", rarity: "R", owned: false },
+  { name: "のこぎりウサギ", role: "Web制作", level: 0, imgPath: "/characters/Web制作/のこぎりウサギ_ノーマル.png", rarity: "SR", owned: false },
+  { name: "設計カラス", role: "Web制作", level: 0, imgPath: "/characters/Web制作/設計カラス_ノーマル.png", rarity: "SSR", owned: false },
 ];
 
 const rarityColor: Record<string, string> = {
@@ -26,8 +42,11 @@ const rarityColor: Record<string, string> = {
 
 export default function CollectionPage() {
   const [activeTab, setActiveTab] = useState<Tab>("全て");
+  const [selected, setSelected] = useState<typeof kerai[number] | null>(null);
 
-  const filtered = activeTab === "全て" ? kerai : kerai.filter((k) => k.role === activeTab);
+  const filtered =
+    activeTab === "全て" ? kerai : kerai.filter((k) => k.role === activeTab);
+  const ownedCount = kerai.filter((k) => k.owned).length;
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
@@ -55,10 +74,11 @@ export default function CollectionPage() {
       {/* Grid */}
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
         {filtered.map((k) => (
-          <div
+          <button
             key={k.name}
+            onClick={() => k.owned && setSelected(k)}
             className={`rounded-2xl border-2 p-3 text-center transition-all ${
-              k.owned ? "" : "opacity-40 grayscale"
+              k.owned ? "hover:shadow-md cursor-pointer" : "opacity-40 grayscale cursor-default"
             }`}
             style={{ borderColor: rarityColor[k.rarity] + "60" }}
           >
@@ -71,19 +91,97 @@ export default function CollectionPage() {
             >
               {k.rarity}
             </div>
-            <div className="text-4xl my-2">{k.icon}</div>
-            <div className="text-xs font-bold text-gray-900 leading-tight">{k.name}</div>
+            <div className="relative w-full aspect-square mb-2 rounded-xl overflow-hidden bg-gray-50">
+              <Image
+                src={k.imgPath}
+                alt={k.name}
+                fill
+                className="object-contain p-1"
+                sizes="(max-width: 640px) 33vw, (max-width: 768px) 25vw, 16vw"
+              />
+            </div>
+            <div className="text-xs font-bold text-gray-900 leading-tight truncate">{k.name}</div>
             <div className="text-xs text-gray-400">{k.role}</div>
             {k.owned && (
               <div className="text-xs text-gray-500 mt-1">Lv.{k.level}</div>
             )}
-          </div>
+          </button>
         ))}
       </div>
 
       <p className="text-center text-sm text-gray-400 mt-8">
-        {kerai.filter((k) => k.owned).length}/{kerai.length} 体を収集済み
+        {ownedCount}/{kerai.length} 体を収集済み
       </p>
+
+      {/* Detail Modal */}
+      {selected && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.5)" }}
+          onClick={() => setSelected(null)}
+        >
+          <div
+            className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <span
+                  className="text-xs font-bold px-2 py-0.5 rounded-full"
+                  style={{
+                    color: rarityColor[selected.rarity],
+                    background: rarityColor[selected.rarity] + "15",
+                  }}
+                >
+                  {selected.rarity}
+                </span>
+                <h2 className="text-xl font-black text-gray-900 mt-1">{selected.name}</h2>
+                <p className="text-sm text-gray-400">{selected.role}</p>
+              </div>
+              <button
+                onClick={() => setSelected(null)}
+                className="text-gray-400 hover:text-gray-600 text-xl font-bold"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-gray-50 mb-4">
+              <Image
+                src={selected.imgPath}
+                alt={selected.name}
+                fill
+                className="object-contain p-4"
+                sizes="100vw"
+              />
+            </div>
+
+            <div className="mb-4">
+              <div className="flex items-center justify-between text-sm mb-1">
+                <span className="text-gray-500">Lv.{selected.level}</span>
+                <span className="text-gray-400">次まで 200 XP</span>
+              </div>
+              <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full"
+                  style={{
+                    width: "40%",
+                    background: "linear-gradient(135deg, #00D4FF, #0088FF)",
+                  }}
+                />
+              </div>
+            </div>
+
+            <a
+              href="/mission"
+              className="block w-full text-center py-3 rounded-xl text-white font-bold text-sm"
+              style={{ background: "linear-gradient(135deg, #00D4FF, #0088FF)" }}
+            >
+              {selected.name}に任務を依頼する 📜
+            </a>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
