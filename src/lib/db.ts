@@ -87,3 +87,52 @@ export async function addMission(
   const updated = [mission, ...current].slice(0, MAX_HISTORY);
   await r.set(key, updated);
 }
+
+// ---- 管理者用 ----
+
+export type AdminUserRecord = {
+  hashedId: string;
+  coins: number;
+  missionCount: number;
+};
+
+/**
+ * Redisに存在する全ユーザーの一覧を取得する（管理者専用）。
+ * user:*:coins キーをSCANして一覧を構築する。
+ */
+export async function getAllUsers(): Promise<AdminUserRecord[]> {
+  const r = getRedis();
+  const users: AdminUserRecord[] = [];
+  let cursor = 0;
+
+  do {
+    const [nextCursor, keys] = await r.scan(cursor, {
+      match: "user:*:coins",
+      count: 100,
+    });
+    cursor = Number(nextCursor);
+
+    for (const key of keys) {
+      // key形式: user:{hashedId}:coins
+      const parts = (key as string).split(":");
+      if (parts.length !== 3) continue;
+      const hashedId = parts[1];
+
+      const coinsKey = `user:${hashedId}:coins`;
+      const missionsKey = `user:${hashedId}:missions`;
+
+      const [coins, missions] = await Promise.all([
+        r.get<number>(coinsKey),
+        r.get<MissionRecord[]>(missionsKey),
+      ]);
+
+      users.push({
+        hashedId,
+        coins: coins ?? 0,
+        missionCount: missions ? missions.length : 0,
+      });
+    }
+  } while (cursor !== 0);
+
+  return users;
+}
